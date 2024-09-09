@@ -1,0 +1,1 @@
+docker build ./ -t trancezero/spbackend:v0.1

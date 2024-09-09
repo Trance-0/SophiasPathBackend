@@ -1,0 +1,1 @@
+conda create --name sophiaspath python=3.9.18 
