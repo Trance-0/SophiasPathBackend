@@ -1,11 +1,14 @@
 #!/bin/bash
 # if the script cannot be found, change the file from CRLF to LF
 
+# laod env variables: https://stackoverflow.com/questions/19331497/set-environment-variables-from-file-of-key-value-pairs#comment37343914_20909045
+export $(grep -v '^#' .env | xargs)
+
 if [ "$DATABASE" = "postgres" ]
 then
     echo "Waiting for postgres..."
 
-    while ! nc -z $SQL_HOST $SQL_PORT; do
+    while ! nc -z $POSTGRE_HOST $POSTGRE_PORT; do
       sleep 0.1
     done
 
@@ -17,22 +20,9 @@ python manage.py migrate
 
 if [ "$DJANGO_SUPERUSER_USERNAME" ]
 then
+    echo "Trying to create user based on environment variables, error message after first creation is normal."
     python manage.py createsuperuser \
-        --noinput \
-        --username $DJANGO_SUPERUSER_USERNAME \
-        --email $DJANGO_SUPERUSER_EMAIL
-fi
-
-# Update the password for the superuser if required
-if [ -n "$DJANGO_SUPERUSER_PASSWORD" ]
-then
-  echo "[INFO] Setting Django superuser password"
-  $DJANGO_ADMIN shell -c "
-  from django.contrib.auth import get_user_model
-
-  user = get_user_model().objects.get(username='$DJANGO_SUPERUSER_USERNAME')
-  user.set_password('$DJANGO_SUPERUSER_PASSWORD')
-  user.save()"
+        --noinput 
 fi
 
 exec "$@"

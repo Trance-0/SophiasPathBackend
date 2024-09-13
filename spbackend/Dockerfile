@@ -19,8 +19,9 @@ WORKDIR ${APP_HOME}
 COPY . . 
 # remove existing env file
 RUN rm ${APP_HOME}/.env
-# copy production env file
+# copy production env file to app dir and root dir
 COPY ./.env.prod ${APP_HOME}/.env
+COPY ./.env.prod /.env
 
 # add entrypoint to root
 ADD ./entrypoint.sh /entrypoint.sh
@@ -43,8 +44,9 @@ RUN chmod -R a+x ${PRODUCTION_MEDIA_ROOT}
 # RUN chown -R www-data:www-data ${HOME}/staticfiles
 # RUN chown -R www-data:www-data ${HOME}/mediafiles
 
-# make log directory
-RUN mkdir ${APP_HOME}/log
+# netcat for database server testing
+RUN apt-get update && apt-get -y dist-upgrade
+RUN apt install -y netcat
 
 EXPOSE 8000
 

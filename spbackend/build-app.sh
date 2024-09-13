@@ -1,1 +1,1 @@
-docker build ./ -t trancezero/spbackend:v0.1
+docker build ./ --no-cache -t trancezero/spbackend:v0.7

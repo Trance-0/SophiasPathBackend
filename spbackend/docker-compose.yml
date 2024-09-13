@@ -9,8 +9,8 @@ networks:
   spbackend-back:
 
 services:
-  app:
-    image: trancezero/spbackend:v0.1
+  spbackend:
+    image: trancezero/spbackend:v0.7
     build:
       context: .
       dockerfile: Dockerfile
@@ -22,10 +22,10 @@ services:
     ports:
       - ${DJANGO_PORT}:8000
     depends_on:
-      - db
+      - spdb
     networks:
       - spbackend-back
-  db:
+  spdb:
     image: postgres:15
     volumes:
       - postgres-data:/var/lib/postgresql/data/
@@ -38,7 +38,7 @@ services:
       - 5432:5432
     networks:
       - spbackend-back
-  nginx:
+  spnginx:
     image: trancezero/spnginx
     build: ./spnginx
     volumes:
@@ -48,6 +48,6 @@ services:
       # port for debugging nginx on local computer
       - ${NGINX_PORT}:80
     depends_on:
-      - app
+      - spbackend
     networks:
       - spbackend-back
