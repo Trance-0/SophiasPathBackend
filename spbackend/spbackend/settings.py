@@ -30,6 +30,7 @@ SECRET_KEY = os.getenv('SECRET_KEY')
 # DEBUG = False
 DEBUG = os.getenv('DEBUG', 'False') == 'True'
 
+# if this setting does not work in docker container, manually change the code in python.
 ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS").split(" ")
 
 # Application definition
@@ -147,7 +148,8 @@ DATABASES = {
         'USER': os.getenv('POSTGRE_USERNAME'),
         'PASSWORD': os.getenv('POSTGRE_PASSWORD'),
         'HOST': "localhost" if DEBUG else os.getenv('POSTGRE_HOST'),
-        'PORT': os.getenv('POSTGRE_PORT')
+        # 'PORT': os.getenv('POSTGRE_PORT') wrong! default port within the network is always 5432 for postgres
+        'PORT': 5432
     }
 }
 

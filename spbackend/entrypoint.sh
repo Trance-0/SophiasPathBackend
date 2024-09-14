@@ -7,6 +7,7 @@ export $(grep -v '^#' .env | xargs)
 if [ "$DATABASE" = "postgres" ]
 then
     echo "Waiting for postgres..."
+    echo "http://" $POSTGRE_HOST $POSTGRE_PORT
 
     while ! nc -z $POSTGRE_HOST $POSTGRE_PORT; do
       sleep 0.1

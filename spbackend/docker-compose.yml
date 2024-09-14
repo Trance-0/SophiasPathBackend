@@ -34,8 +34,8 @@ services:
       - POSTGRES_PASSWORD=${POSTGRE_PASSWORD}
       - POSTGRES_DB=${POSTGRE_HOST}
     ports:
-      # port 5432 for connection on local computer
-      - 5432:5432
+      # port $POSTGRE_PORT for connection on local computer
+      - ${POSTGRE_PORT}:5432
     networks:
       - spbackend-back
   spnginx:
