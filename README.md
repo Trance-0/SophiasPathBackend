@@ -1,5 +1,7 @@
 # SophiasPathBackend
 
+[![wakatime](https://wakatime.com/badge/user/53e0bfc9-ae89-4cb3-99fe-c6cbc6359857/project/9acfc5c5-0ecd-4c7c-a8ef-b4663fc36fdc.svg)](https://wakatime.com/badge/user/53e0bfc9-ae89-4cb3-99fe-c6cbc6359857/project/9acfc5c5-0ecd-4c7c-a8ef-b4663fc36fdc)
+
 This is backend project for [SophiasPath](https://sophiaspath.org)
 
 Powered by [Django REST framework](https://www.django-rest-framework.org/)
