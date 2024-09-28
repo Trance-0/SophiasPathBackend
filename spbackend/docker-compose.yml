@@ -10,7 +10,7 @@ networks:
 
 services:
   spbackend:
-    image: trancezero/spbackend:latest
+    image: trancezero/spbackend:v0.9
     env_file: 
       - .env.prod
     build:

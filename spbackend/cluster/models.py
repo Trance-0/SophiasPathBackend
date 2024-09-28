@@ -9,7 +9,7 @@ def philosopher_file_path(instance, filename):
 
     A note block can only have one file or image, you need to validate that in form
     """
-    return "Philosophers/{0}/{1}".format(
+    return "philosophers/{0}/{1}".format(
         instance.title, filename
     )
 
@@ -20,8 +20,8 @@ def section_file_path(instance, filename):
 
     A note block can only have one file or image, you need to validate that in form
     """
-    return "Philosophers/{0}/section_{1}/{2}".format(
-        instance.Philosopher_id.title, instance.subtitle, filename
+    return "philosophers/{0}/section_{1}/{2}".format(
+        instance.philosopher_id.title, instance.subtitle, filename
     )
 
 class School(models.Model):
@@ -73,7 +73,7 @@ class Philosopher(models.Model):
     last_edit = models.DateTimeField(auto_now=True, null=False)
     
     def __str__(self) -> str:
-        return f"{self.school_id.title}:{self.title}"
+        return f"{self.school_id.title}: {self.title}"
 
 class Section(models.Model):
     philosopher_id = models.ForeignKey(
@@ -97,7 +97,7 @@ class Section(models.Model):
     last_edit = models.DateTimeField(auto_now=True, null=False)
 
     def __str__(self) -> str:
-        return f'{self.page_id.title}:{self.subtitle}'
+        return f'{self.philosopher_id.title}: {self.subtitle}'
 
 class Relation(models.Model):
     # this defines edge for philosopher -> philosopher
@@ -151,4 +151,4 @@ class Tag(models.Model):
     )
 
     def __str__(self) -> str:
-        return f'{self.name}:{self.section_id}:{self.section_id.philosopher_id}'
+        return f'{self.name}: {self.section_id}: {self.section_id.philosopher_id}'
