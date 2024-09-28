@@ -1,0 +1,34 @@
+# pull official base image
+FROM python:3.9.18-bullseye as builder
+
+# configurations
+ENV HOME=/home
+ENV APP_HOME=/home/spbackend
+ENV PRODUCTION_MEDIA_ROOT=/home/mediafiles
+ENV PRODUCTION_STATIC_ROOT=/home/staticfiles
+RUN mkdir ${APP_HOME}
+
+# install dependencies
+WORKDIR $HOME 
+RUN pip install --upgrade pip
+COPY requirements.txt .
+RUN pip3 install -r requirements.txt --no-cache-dir
+
+# copy files
+WORKDIR ${APP_HOME}
+
+# copy production env file to app dir and root dir
+COPY ./.env ${APP_HOME}/.env
+COPY ./.env /.env
+
+# add entrypoint to root
+ADD ./entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh 
+
+# netcat for database server testing
+RUN apt-get update && apt-get -y dist-upgrade
+RUN apt install -y netcat
+
+EXPOSE 8000
+
+ENTRYPOINT ["/entrypoint.sh"]

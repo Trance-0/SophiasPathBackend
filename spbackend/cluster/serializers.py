@@ -3,11 +3,11 @@ This defines serializer for all objects in cluster
 """
 
 from rest_framework import serializers
-from .models import Category,Development,Page,Section,Relation,Tag
+from .models import School,Development,Philosopher,Section,Relation,Affiliation,Tag
 
-class CategorySerializer(serializers.ModelSerializer):
+class SchoolSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Category
+        model = School
         fields = '__all__'
 
 class DevelopmentSerializer(serializers.ModelSerializer):
@@ -15,9 +15,9 @@ class DevelopmentSerializer(serializers.ModelSerializer):
         model = Development
         fields = '__all__'
 
-class PageSerializer(serializers.ModelSerializer):
+class PhilosopherSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Page
+        model = Philosopher
         fields = '__all__'
 
 class SectionSerializer(serializers.ModelSerializer):
@@ -28,6 +28,11 @@ class SectionSerializer(serializers.ModelSerializer):
 class RelationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Relation
+        fields = '__all__'
+
+class AffiliationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Affiliation
         fields = '__all__'
 
 class TagSerializer(serializers.ModelSerializer):

@@ -1,5 +1,6 @@
 # Teporary production files
 spbackend/productionfiles
+spbackend/media
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
@@ -123,8 +124,7 @@ celerybeat.pid
 *.sage.py
 
 # Environments
-*.env
-.env.*
+.env*
 .venv
 env/
 venv/

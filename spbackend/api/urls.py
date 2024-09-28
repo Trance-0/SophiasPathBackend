@@ -2,11 +2,12 @@ from django.urls import path
 from . import views
 
 urlpatterns =[
-    path('getCategoryList',views.getCategories),
+    path('getSchoolList',views.getSchools),
     path('getDevelopmentList',views.getDevelopments),
-    path('getPages/<int:cate_pk>',views.getPageByCategory),
-    path('getSections/<int:page_pk>',views.getSectionByPage),
-    path('getRelationsList',views.getRelations),
+    path('getPhilosophers/<int:school_pk>',views.getPhilosophersBySchool),
+    path('getAffiliations/<int:philosopher_pk>',views.getAffiliations),
+    path('getSections/<int:philosopher_pk>',views.getSectionsByPhilosopher),
+    path('getRelationsList/<int:philosopher_pk>',views.getRelations),
     path('getTags',views.getTags),
-    path('getSectionByTag/<int:tag_pk>',views.getSectionByTag),
+    path('getSectionsByTag/<int:tag_pk>',views.getSectionsByTag),
 ]

@@ -148,8 +148,8 @@ DATABASES = {
         'USER': os.getenv('POSTGRE_USERNAME'),
         'PASSWORD': os.getenv('POSTGRE_PASSWORD'),
         'HOST': "localhost" if DEBUG else os.getenv('POSTGRE_HOST'),
-        # 'PORT': os.getenv('POSTGRE_PORT') wrong! default port within the network is always 5432 for postgres
-        'PORT': 5432
+        'PORT': os.getenv('POSTGRE_PORT') # wrong! default port within the network is always 5432 for postgres
+        # 'PORT': 5432
     }
 }
 

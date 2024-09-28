@@ -1,46 +1,52 @@
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
-from cluster.serializers import SectionSerializer,TagSerializer,PageSerializer,CategorySerializer,RelationSerializer,DevelopmentSerializer
-from cluster.models import Category,Development,Page,Section,Relation,Tag
+from cluster.serializers import SchoolSerializer,DevelopmentSerializer,PhilosopherSerializer,SectionSerializer,RelationSerializer,AffiliationSerializer,TagSerializer
+from cluster.models import School,Development,Philosopher,Section,Relation,Affiliation,Tag
 
 @api_view(['GET'])
-def getCategories(request):
-    categories=Category.objects.all()
-    serializer=CategorySerializer(categories,many=True)
+def getSchools(request):
+    categories=School.objects.all()
+    serializer=SchoolSerializer(categories,many=True)
     return Response(serializer.data)
 
 @api_view(['GET'])
 def getDevelopments(request):
     developments=Development.objects.all()
-    serializer=CategorySerializer(developments,many=True)
+    serializer=DevelopmentSerializer(developments,many=True)
     return Response(serializer.data)
 
 @api_view(['GET'])
-def getPageByCategory(request,cate_pk):
-    pages=Page.objects.filter(category_id=cate_pk)
-    serializer=PageSerializer(pages,many=True)
+def getPhilosophersBySchool(request,school_pk):
+    philosophers=Philosopher.objects.filter(school_id=school_pk)
+    serializer=PhilosopherSerializer(philosophers,many=True)
     return Response(serializer.data)
 
 @api_view(['GET'])
-def getSectionByPage(request,page_pk):
-    sections=Section.objects.filter(page_id=page_pk)
+def getAffiliations(request,philosopher_pk):
+    affiliations=Affiliation.objects.filter(start_philosopher_id=philosopher_pk)
+    serializer=AffiliationSerializer(affiliations,many=True)
+    return Response(serializer.data)
+
+@api_view(['GET'])
+def getSectionsByPhilosopher(request,philosopher_pk):
+    sections=Section.objects.filter(philosopher_id=philosopher_pk)
     serializer=SectionSerializer(sections,many=True)
     return Response(serializer.data)
 
 @api_view(['GET'])
-def getRelations(request):
-    relations=Relation.objects.all()
+def getRelations(request,philosopher_pk):
+    relations=Relation.objects.filter(start_philosopher_id=philosopher_pk)
     serializer=RelationSerializer(relations,many=True)
     return Response(serializer.data)
 
 @api_view(['GET'])
 def getTags(request):
-    tags=Tag.objects.all()
+    tags=Tag.objects.order_by().values('name').distinct()
     serializer=TagSerializer(tags,many=True)
     return Response(serializer.data)
 
 @api_view(['GET'])
-def getSectionByTag(request,tag_pk):
+def getSectionsByTag(request,tag_pk):
     sections=Tag.objects.filter(id=tag_pk).section_id
     serializer=SectionSerializer(sections,many=True)
     return Response(serializer.data)
