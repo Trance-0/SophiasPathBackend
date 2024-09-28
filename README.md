@@ -16,12 +16,12 @@ Endpoint: `/getSchoolList`
 
 Method: GET
 
-URL: https://backend.sophiaspath.org/api/getSchoolList
+URL: https://backend.sophiaspath.org/getSchoolList
 
 Example Request:
 
 ```bash
-curl -X GET "https://backend.sophiaspath.org/api/getSchoolList" \
+curl -X GET "https://backend.sophiaspath.org/getSchoolList" \
 -H "Content-Type: application/json"
 ```
 
@@ -32,12 +32,12 @@ Endpoint: `/getDevelopmentList`
 
 Method: GET
 
-URL: https://backend.sophiaspath.org/api/getDevelopmentList
+URL: https://backend.sophiaspath.org/getDevelopmentList
 
 Example Request:
 
 ```bash
-curl -X GET "https://backend.sophiaspath.org/api/getDevelopmentList" \
+curl -X GET "https://backend.sophiaspath.org/getDevelopmentList" \
 -H "Content-Type: application/json"
 ```
 
@@ -49,12 +49,12 @@ Endpoint: `/getPhilosophers/<int:school_pk>`
 
 Method: GET
 
-URL: https://backend.sophiaspath.org/api/getPhilosophers/<school_pk>
+URL: https://backend.sophiaspath.org/getPhilosophers/<school_pk>
 
 Example Request:
 
 ```bash
-curl -X GET "https://backend.sophiaspath.org/api/getPhilosophers/1" \
+curl -X GET "https://backend.sophiaspath.org/getPhilosophers/1" \
 -H "Content-Type: application/json"
 ```
 
@@ -67,12 +67,12 @@ Endpoint: `/getAffiliations/<int:philosopher_pk>`
 
 Method: GET
 
-URL: https://backend.sophiaspath.org/api/getAffiliations/<philosopher_pk>
+URL: https://backend.sophiaspath.org/getAffiliations/<philosopher_pk>
 
 Example Request:
 
 ``` bash
-curl -X GET "https://backend.sophiaspath.org/api/getAffiliations/1" \
+curl -X GET "https://backend.sophiaspath.org/getAffiliations/1" \
 -H "Content-Type: application/json"
 ```
 
@@ -86,12 +86,12 @@ Endpoint: `/getSections/<int:philosopher_pk>`
 
 Method: GET
 
-URL: https://backend.sophiaspath.org/api/getSections/<philosopher_pk>
+URL: https://backend.sophiaspath.org/getSections/<philosopher_pk>
 
 Example Request:
 
 ```bash
-curl -X GET "https://backend.sophiaspath.org/api/getSections/1" \
+curl -X GET "https://backend.sophiaspath.org/getSections/1" \
 -H "Content-Type: application/json"
 ```
 
@@ -105,12 +105,12 @@ Endpoint: `/getRelationsList/<int:philosopher_pk>`
 
 Method: GET
 
-URL: https://backend.sophiaspath.org/api/getRelationsList/<philosopher_pk>
+URL: https://backend.sophiaspath.org/getRelationsList/<philosopher_pk>
 
 Example Request:
 
 ``` bash
-curl -X GET "https://backend.sophiaspath.org/api/getRelationsList/1" \
+curl -X GET "https://backend.sophiaspath.org/getRelationsList/1" \
 -H "Content-Type: application/json"
 ```
 
@@ -124,12 +124,12 @@ Endpoint: `/getTags`
 
 Method: GET
 
-URL: https://backend.sophiaspath.org/api/getTags
+URL: https://backend.sophiaspath.org/getTags
 
 Example Request:
 
 ``` bash
-curl -X GET "https://backend.sophiaspath.org/api/getTags" \
+curl -X GET "https://backend.sophiaspath.org/getTags" \
 -H "Content-Type: application/json"
 ```
 
@@ -140,12 +140,12 @@ Endpoint: `/getSectionsByTag/<int:tag_pk>`
 
 Method: GET
 
-URL: https://backend.sophiaspath.org/api/getSectionsByTag/<tag_pk>
+URL: https://backend.sophiaspath.org/getSectionsByTag/<tag_pk>
 
 Example Request:
 
 ```bash
-curl -X GET "https://backend.sophiaspath.org/api/getSectionsByTag/1" \
+curl -X GET "https://backend.sophiaspath.org/getSectionsByTag/1" \
 -H "Content-Type: application/json" 
 ```
 Replace `1` with the appropriate tag_pk.
