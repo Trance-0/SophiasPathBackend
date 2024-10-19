@@ -41,13 +41,13 @@ def getRelations(request,philosopher_pk):
 
 @api_view(['GET'])
 def getTags(request):
-    tags=Tag.objects.order_by().values('name').distinct()
+    tags=Tag.objects.distinct("name")
     serializer=TagSerializer(tags,many=True)
     return Response(serializer.data)
 
 @api_view(['GET'])
-def getSectionsByTag(request,tag_pk):
-    sections=Tag.objects.filter(id=tag_pk).section_id
+def getSectionsByTag(request,tag_name):
+    sections=Tag.objects.filter(name=tag_name).section_id
     serializer=SectionSerializer(sections,many=True)
     return Response(serializer.data)
 
