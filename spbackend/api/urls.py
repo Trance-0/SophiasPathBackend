@@ -9,5 +9,5 @@ urlpatterns =[
     path('getSections/<int:philosopher_pk>',views.getSectionsByPhilosopher),
     path('getRelationsList/<int:philosopher_pk>',views.getRelations),
     path('getTags',views.getTags),
-    path('getSectionsByTag/<int:tag_pk>',views.getSectionsByTag),
+    path('getSectionsByTag/<str:tag_name>',views.getSectionsByTag),
 ]

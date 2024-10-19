@@ -47,7 +47,7 @@ def getTags(request):
 
 @api_view(['GET'])
 def getSectionsByTag(request,tag_name):
-    sections=Tag.objects.filter(name=tag_name).section_id
+    sections=[s.section_id for s in Tag.objects.filter(name=tag_name)]
     serializer=SectionSerializer(sections,many=True)
     return Response(serializer.data)
 
