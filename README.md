@@ -27,7 +27,39 @@ curl -X GET "https://backend.sophiaspath.org/getSchoolList" \
 -H "Content-Type: application/json"
 ```
 
+Example Response:
+
+```json
+[
+    {
+        "title": "School of Athens",
+        "description": "The School of Athens is a fresco painted by Raphael in 1509-1510 in the Stanza della Segnatura (Room of the Signature) of the Apostolic Palace in the Vatican City.",
+        "date_created": "2024-09-28T00:00:00Z",
+        "last_edit": "2024-09-28T00:00:00Z"
+    },
+    ...
+]
+```
+
+### Get School by Slug
+
+Fetches a school by its slug.
+
+Endpoint: `/getSchool/<str:school_slug>`
+
+Method: GET
+
+URL: https://backend.sophiaspath.org/getSchool/<school_slug>
+
+Example Request:
+
+```bash
+curl -X GET "https://backend.sophiaspath.org/getSchool/<str:school_slug>" \
+-H "Content-Type: application/json"
+```
+
 ### Get Development List
+
 Fetches a list of developments.
 
 Endpoint: `/getDevelopmentList`
@@ -43,26 +75,104 @@ curl -X GET "https://backend.sophiaspath.org/getDevelopmentList" \
 -H "Content-Type: application/json"
 ```
 
-### Get Philosophers by School
+Example Response:
 
-Fetches a list of philosophers associated with a specific school.
+```json
+[
+    {
+        "start_school_id": 1,
+        "end_school_id": 2,
+        "name": "Founding",
+        "description": "The School of Athens is a fresco painted by Raphael in 1509-1510 in the Stanza della Segnatura (Room of the Signature) of the Apostolic Palace in the Vatican City.",
+        "date_created": "2024-09-28T00:00:00Z",
+        "last_edit": "2024-09-28T00:00:00Z"
+    },
+    ...
+]
+```
 
-Endpoint: `/getPhilosophers/<int:school_pk>`
+### Get Developments by School
+
+Fetches a list of developments associated with a specific school.
+
+Endpoint: `/getDevelopmentBySchool/<str:school_slug>`
 
 Method: GET
 
-URL: https://backend.sophiaspath.org/getPhilosophers/<school_pk>
+URL: https://backend.sophiaspath.org/getDevelopmentBySchool/<school_slug>
 
 Example Request:
 
 ```bash
-curl -X GET "https://backend.sophiaspath.org/getPhilosophers/1" \
+curl -X GET "https://backend.sophiaspath.org/getDevelopmentBySchool/<str:school_slug>" \
 -H "Content-Type: application/json"
 ```
 
-Replace `1` with the appropriate school_pk.
+### Get Philosophers by School
+
+Fetches a list of philosophers associated with a specific school.
+
+Endpoint: `/getPhilosophers/<int:school_slug>`
+
+Method: GET
+
+URL: https://backend.sophiaspath.org/getPhilosophers/<int:school_slug>
+
+Example Request:
+
+```bash
+curl -X GET "https://backend.sophiaspath.org/getPhilosophers/<int:school_slug>" \
+-H "Content-Type: application/json"
+```
+
+Example Response:
+
+```json
+[
+    {
+        "title": "Socrates",
+        "school_id": 1,
+        "description": "Socrates was an ancient Greek philosopher credited as the founder of Western philosophy. He was a student of Plato and the teacher of Aristotle.",
+        "date_created": "2024-09-28T00:00:00Z",
+        "last_edit": "2024-09-28T00:00:00Z"
+    },
+    ...
+]
+```
+
+### Get Philosopher by Slug
+
+Fetches a philosopher by its slug.
+
+Endpoint: `/getPhilosopher/<str:philosopher_slug>` 
+
+Method: GET
+
+URL: https://backend.sophiaspath.org/getPhilosopher/<str:philosopher_slug>
+
+Example Request:
+
+```bash
+curl -X GET "https://backend.sophiaspath.org/getPhilosopher/<str:philosopher_slug>" \
+-H "Content-Type: application/json"
+```
+
+Example Response:
+
+```json
+[
+    {
+        "title": "Socrates",
+        "school_id": 1,
+        "description": "Socrates was an ancient Greek philosopher credited as the founder of Western philosophy. He was a student of Plato and the teacher of Aristotle.",
+        "date_created": "2024-09-28T00:00:00Z",
+        "last_edit": "2024-09-28T00:00:00Z"
+    }
+]
+```
 
 ### Get Affiliations
+
 Fetches affiliations for a specific philosopher.
 
 Endpoint: `/getAffiliations/<int:philosopher_pk>`

@@ -3,11 +3,14 @@ from . import views
 
 urlpatterns =[
     path('getSchoolList',views.getSchools),
+    path('getSchool/<str:school_slug>',views.getSchoolBySlug),
     path('getDevelopmentList',views.getDevelopments),
-    path('getPhilosophers/<int:school_pk>',views.getPhilosophersBySchool),
-    path('getAffiliations/<int:philosopher_pk>',views.getAffiliations),
-    path('getSections/<int:philosopher_pk>',views.getSectionsByPhilosopher),
-    path('getRelationsList/<int:philosopher_pk>',views.getRelations),
+    path('getDevelopmentBySchool/<str:school_slug>',views.getDevelopmentsBySchool),
+    path('getPhilosophersBySchool/<str:school_slug>',views.getPhilosophersBySchool),
+    path('getPhilosopher/<str:philosopher_slug>',views.getPhilosopher),
+    path('getAffiliations/<str:philosopher_slug>',views.getAffiliations),
+    path('getSections/<str:philosopher_slug>',views.getSectionsByPhilosopher),
+    path('getRelationsList/<str:philosopher_slug>',views.getRelations),
     path('getTags',views.getTags),
-    path('getSectionsByTag/<str:tag_name>',views.getSectionsByTag),
+    path('getSectionsByTag/<str:tag_slug>',views.getSectionsByTag),
 ]

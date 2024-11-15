@@ -10,8 +10,11 @@ def philosopher_file_path(instance, filename):
     A note block can only have one file or image, you need to validate that in form
     """
     return "philosophers/{0}/{1}".format(
-        instance.title, filename
+        instance.name, filename
     )
+
+def generate_slug(instance):
+    return instance.name.lower().replace(" ", "-")
 
 def section_file_path(instance, filename):
     """
@@ -20,20 +23,26 @@ def section_file_path(instance, filename):
 
     A note block can only have one file or image, you need to validate that in form
     """
-    return "philosophers/{0}/section_{1}/{2}".format(
-        instance.philosopher_id.title, instance.subtitle, filename
+    return "philosophers/{0}/section-{1}/{2}".format(
+        instance.philosopher_id.slug, instance.subtitle, filename
     )
 
 class School(models.Model):
     # this defines the School of philosopher (Set name)
-    title = models.CharField(max_length=100, default="Unknown School", null=False)
+    name = models.CharField(max_length=100, unique=True, null=False)
+    slug = models.SlugField(max_length=100, unique=True, blank=True, null=False)
     description = models.CharField(max_length=600, blank=True, null=True)
     # last_use and date_created automatically created, for these field, create one time value to timezone.now()
     date_created = models.DateTimeField(auto_now_add=True, null=False)
     last_edit = models.DateTimeField(auto_now=True, null=False)
 
+    def save(self, *args, **kwargs):
+        if not self.slug or self.slug == "":
+            self.slug = generate_slug(self)
+        super().save(*args, **kwargs)
+
     def __str__(self) -> str:
-        return self.title
+        return self.name
     
 class Development(models.Model):
     # this defines edge for school -> school
@@ -56,10 +65,11 @@ class Development(models.Model):
     last_edit = models.DateTimeField(auto_now=True, null=False)
     
     def __str__(self) -> str:
-        return f"{self.start_school_id.title} => {self.end_school_id.title}"
+        return f"{self.start_school_id.name} => {self.end_school_id.name}"
 
 class Philosopher(models.Model):
-    title = models.CharField(max_length=100, default="Unknown Philosopher", null=False)
+    name = models.CharField(max_length=100, unique=True, null=False)
+    slug = models.SlugField(max_length=100, unique=True, blank=True, null=False)
     school_id = models.ForeignKey(
         School,
         on_delete=models.CASCADE,
@@ -72,8 +82,13 @@ class Philosopher(models.Model):
     date_created = models.DateTimeField(auto_now_add=True, null=False)
     last_edit = models.DateTimeField(auto_now=True, null=False)
     
+    def save(self, *args, **kwargs):
+        if not self.slug or self.slug == "":
+            self.slug = generate_slug(self)
+        super().save(*args, **kwargs)
+    
     def __str__(self) -> str:
-        return f"{self.school_id.title}: {self.title}"
+        return f"{self.school_id.name}: {self.name}"
 
 class Section(models.Model):
     philosopher_id = models.ForeignKey(
@@ -97,7 +112,7 @@ class Section(models.Model):
     last_edit = models.DateTimeField(auto_now=True, null=False)
 
     def __str__(self) -> str:
-        return f'{self.philosopher_id.title}: {self.subtitle}'
+        return f'{self.philosopher_id.name}: {self.subtitle}'
 
 class Relation(models.Model):
     # this defines edge for philosopher -> philosopher
@@ -119,7 +134,7 @@ class Relation(models.Model):
     date_created = models.DateTimeField(auto_now_add=True, null=False)
     last_edit = models.DateTimeField(auto_now=True, null=False)
     def __str__(self) -> str:
-        return f"{self.start_philosopher_id.title} => {self.end_philosopher_id.title}"
+        return f"{self.start_philosopher_id.name} => {self.end_philosopher_id.name}"
 
 class Affiliation(models.Model):
     # this defines edge for philosopher -> school
@@ -141,6 +156,7 @@ class Affiliation(models.Model):
 
 class Tag(models.Model):
     name = models.CharField(max_length=36, null=False)
+    slug = models.SlugField(max_length=100, blank=True, null=False)
     # last_use and date_created automatically created, for these field, create one time value to timezone.now()
     date_created = models.DateTimeField(auto_now_add=True, null=False)
     section_id = models.ForeignKey(
@@ -149,6 +165,11 @@ class Tag(models.Model):
         on_delete=models.CASCADE,
         null=False,
     )
+
+    def save(self, *args, **kwargs):
+        if not self.slug or self.slug == "":
+            self.slug = generate_slug(self)
+        super().save(*args, **kwargs)
 
     def __str__(self) -> str:
         return f'{self.name}: {self.section_id}: {self.section_id.philosopher_id}'

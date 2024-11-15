@@ -6,7 +6,7 @@ from .models import School,Development,Philosopher,Section,Relation,Affiliation,
 class SchoolAdmin(admin.ModelAdmin):
     """ in admin view and one extra for convenience"""
     model=School
-    list_display = ("title","date_created","last_edit",)
+    list_display = ("name","date_created","last_edit",)
 
 class SectionInline(admin.StackedInline):
     """Line per message in admin view and one extra for convenience"""
@@ -18,7 +18,7 @@ class SectionInline(admin.StackedInline):
 class PhilosopherAdmin(admin.ModelAdmin):
     """ in admin view and one extra for convenience"""
     model=Philosopher
-    list_display = ("title","date_created","last_edit",)
+    list_display = ("name","date_created","last_edit",)
     readonly_fields=["date_created","last_edit"]
     inlines = [
         SectionInline
