@@ -1,60 +1,70 @@
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from django.db.models import Q
-from cluster.serializers import SchoolSerializer,DevelopmentSerializer,PhilosopherSerializer,SectionSerializer,RelationSerializer,AffiliationSerializer,TagSerializer
-from cluster.models import School,Development,Philosopher,Section,Relation,Affiliation,Tag
+from cluster.serializers import PageSerializer,SectionSerializer,RelationSerializer,TagSerializer
+from cluster.models import Page,Section,Relation,Tag,PageTypeChoices,RelationTypeChoices
 
 @api_view(['GET'])
 def getSchools(request):
-    categories=School.objects.all()
-    serializer=SchoolSerializer(categories,many=True)
+    # get all schools available on this website
+    pages=Page.objects.filter(page_type=PageTypeChoices.SCHOOL)
+    serializer=PageSerializer(pages,many=True)
     return Response(serializer.data)
 
 @api_view(['GET'])
 def getSchoolBySlug(request,school_slug):
-    school=School.objects.get(slug=school_slug)
-    serializer=SchoolSerializer(school)
+    # get a school page instance by slug
+    school=Page.objects.get(Q(slug=school_slug) & Q(page_type=PageTypeChoices.SCHOOL))
+    serializer=PageSerializer(school)
     return Response(serializer.data)
 
 @api_view(['GET'])
 def getDevelopments(request):
-    developments=Development.objects.all()
-    serializer=DevelopmentSerializer(developments,many=True)
+    # get all relations of development available on this website
+    developments=Relation.objects.filter(relation_type=RelationTypeChoices.DEVELOPMENT)
+    serializer=RelationSerializer(developments,many=True)
     return Response(serializer.data)
 
 @api_view(['GET'])
 def getDevelopmentsBySchool(request,school_slug):
-    developments=Development.objects.filter(Q(start_school_id__slug=school_slug)|Q(end_school_id__slug=school_slug))
-    serializer=DevelopmentSerializer(developments,many=True)
+    # get all relations of development available on this website starting from a school
+    school=Page.objects.get(Q(slug=school_slug) & Q(page_type=PageTypeChoices.SCHOOL))
+    developments=Relation.objects.filter((Q(start_page_id=school)|Q(end_page_id=school)) & Q(relation_type=RelationTypeChoices.DEVELOPMENT))
+    serializer=RelationSerializer(developments,many=True)
     return Response(serializer.data)
 
 @api_view(['GET'])
 def getPhilosophersBySchool(request,school_slug):
-    philosophers=Philosopher.objects.filter(school_slug=school_slug)
-    serializer=PhilosopherSerializer(philosophers,many=True)
+    school=Page.objects.get(slug=school_slug)
+    affiliations=Relation.objects.filter(Q(start_page_id=school) & Q(relation_type=RelationTypeChoices.AFFILIATION))
+    philosophers=[a.end_page_id for a in affiliations]
+    serializer=PageSerializer(philosophers,many=True)
     return Response(serializer.data)
 
 @api_view(['GET'])
 def getPhilosopher(request,philosopher_slug):
-    philosopher=Philosopher.objects.get(slug=philosopher_slug)
-    serializer=PhilosopherSerializer(philosopher)
+    philosopher=Page.objects.get(Q(slug=philosopher_slug) & Q(page_type=PageTypeChoices.PHILOSOPHER))
+    serializer=PageSerializer(philosopher)
     return Response(serializer.data)
 
 @api_view(['GET'])
 def getAffiliations(request,philosopher_slug):
-    affiliations=Affiliation.objects.filter(start_philosopher_id__slug=philosopher_slug)
-    serializer=AffiliationSerializer(affiliations,many=True)
+    philosopher=Page.objects.get(Q(slug=philosopher_slug) & Q(page_type=PageTypeChoices.PHILOSOPHER))
+    affiliations=Relation.objects.filter(Q(start_page_id=philosopher) & Q(relation_type=RelationTypeChoices.AFFILIATION))
+    serializer=RelationSerializer(affiliations,many=True)
     return Response(serializer.data)
 
 @api_view(['GET'])
 def getSectionsByPhilosopher(request,philosopher_slug):
-    sections=Section.objects.filter(philosopher_id__slug=philosopher_slug).order_by("pk")
+    philosopher=Page.objects.get(Q(slug=philosopher_slug) & Q(page_type=PageTypeChoices.PHILOSOPHER))
+    sections=Section.objects.filter(Q(page_id=philosopher)).order_by("order")
     serializer=SectionSerializer(sections,many=True)
     return Response(serializer.data)
 
 @api_view(['GET'])
 def getRelations(request,philosopher_slug):
-    relations=Relation.objects.filter(start_philosopher_id__slug=philosopher_slug)
+    philosopher=Page.objects.get(Q(slug=philosopher_slug) & Q(page_type=PageTypeChoices.PHILOSOPHER))
+    relations=Relation.objects.filter(Q(start_page_id=philosopher) | Q(end_page_id=philosopher))
     serializer=RelationSerializer(relations,many=True)
     return Response(serializer.data)
 

@@ -1,20 +1,9 @@
 from django.db import models
+from django.utils.text import slugify
+from django.utils.translation import gettext_lazy as _
 
 # Create your models here.
 
-def philosopher_file_path(instance, filename):
-    """
-    file will be uploaded to MEDIA_ROOT/user_<id>/<filename>
-    https://docs.djangoproject.com/en/dev/ref/models/fields/#django.db.models.FileField.upload_to
-
-    A note block can only have one file or image, you need to validate that in form
-    """
-    return "philosophers/{0}/{1}".format(
-        instance.name, filename
-    )
-
-def generate_slug(instance):
-    return instance.name.lower().replace(" ", "-")
 
 def section_file_path(instance, filename):
     """
@@ -23,14 +12,26 @@ def section_file_path(instance, filename):
 
     A note block can only have one file or image, you need to validate that in form
     """
-    return "philosophers/{0}/section-{1}/{2}".format(
-        instance.philosopher_id.slug, instance.subtitle, filename
+    return "{0}/{1}/section-{2}/{3}".format(
+        instance.page_id.page_type, instance.page_id.slug, instance.subtitle, filename
     )
 
-class School(models.Model):
+
+class PageTypeChoices(models.TextChoices):
+    # this defines the School of philosopher (Set name)
+    SCHOOL = "s", _("School")
+    # this defines the philosopher (Set name)
+    PHILOSOPHER = "p", _("Philosopher")
+
+class Page(models.Model):
     # this defines the School of philosopher (Set name)
     name = models.CharField(max_length=100, unique=True, null=False)
     slug = models.SlugField(max_length=100, unique=True, blank=True, null=False)
+    page_type = models.CharField(
+        max_length=1,
+        choices=PageTypeChoices.choices,
+        default=PageTypeChoices.PHILOSOPHER,
+    )
     description = models.CharField(max_length=600, blank=True, null=True)
     # last_use and date_created automatically created, for these field, create one time value to timezone.now()
     date_created = models.DateTimeField(auto_now_add=True, null=False)
@@ -38,65 +39,51 @@ class School(models.Model):
 
     def save(self, *args, **kwargs):
         if not self.slug or self.slug == "":
-            self.slug = generate_slug(self)
+            self.slug = slugify(self.name)
         super().save(*args, **kwargs)
 
     def __str__(self) -> str:
         return self.name
-    
-class Development(models.Model):
-    # this defines edge for school -> school
-    start_school_id = models.ForeignKey(
-        School,
-        on_delete=models.CASCADE,
-        related_name="outdegree",
-        null=False,
-    )
-    end_school_id = models.ForeignKey(
-        School,
-        on_delete=models.CASCADE,
-        related_name="indegree",
-        null=False,
-    )
-    name = models.CharField(max_length=36, null=False)
-    description = models.CharField(max_length=600, blank=True, null=True)
-    # last_use and date_created automatically created, for these field, create one time value to timezone.now()
-    date_created = models.DateTimeField(auto_now_add=True, null=False)
-    last_edit = models.DateTimeField(auto_now=True, null=False)
-    
-    def __str__(self) -> str:
-        return f"{self.start_school_id.name} => {self.end_school_id.name}"
 
-class Philosopher(models.Model):
-    name = models.CharField(max_length=100, unique=True, null=False)
-    slug = models.SlugField(max_length=100, unique=True, blank=True, null=False)
-    school_id = models.ForeignKey(
-        School,
-        on_delete=models.CASCADE,
-        null=False,
-    )
-    thumbnail = models.ImageField(upload_to=philosopher_file_path, blank=True, null=True)
-    # file field is currently unsupported
-    description = models.CharField(max_length=600, blank=True, null=True)
-    # last_use and date_created automatically created, for these field, create one time value to timezone.now()
-    date_created = models.DateTimeField(auto_now_add=True, null=False)
-    last_edit = models.DateTimeField(auto_now=True, null=False)
-    
-    def save(self, *args, **kwargs):
-        if not self.slug or self.slug == "":
-            self.slug = generate_slug(self)
-        super().save(*args, **kwargs)
-    
-    def __str__(self) -> str:
-        return f"{self.school_id.name}: {self.name}"
+class SectionTypeChoices(models.TextChoices):
+    # ordinary text
+    TEXT = "t", "Text"
+    # ordinary image or also used as metadata for the page
+    IMAGE = "i", _("Image")
+    # ordinary file
+    FILE = "f", _("File")
+    # This is a note for arrow starting from the current node to the specified [Node] labeled with text in parentheses "Text". There can be cases where an arrow attached with multiple texts. In such case, put texts together on the same arrow.
+    FOOTNOTE = "n", _("Footnote")
+    # This is the where I add the refence and the link of them.
+    READMORE = "r", _("Read More")
+    # This is a note for arrow starting from the current node to the specified [Node] labeled with text in parentheses "Text". There can be cases where an arrow attached with multiple texts. In such case, put texts together on the same arrow. the page slug will be stored in args.
+    ARROW = "a", _("Arrow")
+    # This is the where to add meta data for the entire page
+    PAGE_META = "m", _("Page Meta")
 
 class Section(models.Model):
-    philosopher_id = models.ForeignKey(
-        Philosopher,
+    page_id = models.ForeignKey(
+        Page,
         on_delete=models.CASCADE,
         null=False,
     )
     subtitle = models.CharField(max_length=100, default="Untitled Section", null=False)
+    slug = models.SlugField(max_length=100, unique=True, blank=True, null=False)
+    section_type = models.CharField(
+        max_length=1,
+        choices=SectionTypeChoices.choices,
+        default=SectionTypeChoices.TEXT,
+    )
+    parent_section_id = models.ForeignKey(
+        "self",
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+    )
+    # if parent_section_id is not null, this section is a sub-section of parent_section_id
+    # if parent_section_id is null, this section is a top-level section
+    order = models.IntegerField(default=0, null=False)
+
     image = models.ImageField(upload_to=section_file_path, blank=True, null=True)
     # file field is currently unsupported
     file = models.FileField(upload_to=section_file_path, blank=True, null=True)
@@ -111,48 +98,62 @@ class Section(models.Model):
     date_created = models.DateTimeField(auto_now_add=True, null=False)
     last_edit = models.DateTimeField(auto_now=True, null=False)
 
+    def save(self, *args, **kwargs):
+        if not self.slug or self.slug == "":
+            self.slug = slugify(self.subtitle)
+        super().save(*args, **kwargs)
+
     def __str__(self) -> str:
-        return f'{self.philosopher_id.name}: {self.subtitle}'
+        return f"{self.page_id.name}: {self.subtitle}"
+    
+class RelationTypeChoices(models.TextChoices):
+    # this defines the relation between philosopher and philosopher
+    AFFILIATION = "a", _("Affiliation")
+    # this defines the relation between philosopher and development
+    DEVELOPMENT = "d", _("Development")
+    # this defines the relation between philosopher and philosopher
+    INFLUENCE = "i", _("Influence")
 
 class Relation(models.Model):
     # this defines edge for philosopher -> philosopher
-    start_philosopher_id = models.ForeignKey(
-        Philosopher,
+    start_page_id = models.ForeignKey(
+        Page,
         on_delete=models.CASCADE,
         related_name="outdegree",
         null=False,
     )
-    end_philosopher_id = models.ForeignKey(
-        Philosopher,
+    end_page_id = models.ForeignKey(
+        Page,
         on_delete=models.CASCADE,
         related_name="indegree",
         null=False,
     )
+    relation_type = models.CharField(
+        max_length=1,
+        choices=RelationTypeChoices.choices,
+        default=RelationTypeChoices.AFFILIATION,
+    )
     name = models.CharField(max_length=36, null=False)
     description = models.CharField(max_length=600, blank=True, null=True)
     # last_use and date_created automatically created, for these field, create one time value to timezone.now()
     date_created = models.DateTimeField(auto_now_add=True, null=False)
     last_edit = models.DateTimeField(auto_now=True, null=False)
-    def __str__(self) -> str:
-        return f"{self.start_philosopher_id.name} => {self.end_philosopher_id.name}"
 
-class Affiliation(models.Model):
-    # this defines edge for philosopher -> school
-    start_philosopher_id = models.ForeignKey(
-        Philosopher,
+    def __str__(self) -> str:
+        return f"{self.start_page_id.name} => {self.end_page_id.name}"
+
+class DefinitionLink(models.Model):
+    # this class is used to render definition link for the term
+    term = models.CharField(max_length=36, null=False)
+    definition = models.ForeignKey(
+        Section,
         on_delete=models.CASCADE,
         null=False,
     )
-    end_school_id = models.ForeignKey(
-        School,
-        on_delete=models.CASCADE,
-        null=False,
-    )
-    name = models.CharField(max_length=36, null=False)
-    description = models.CharField(max_length=600, blank=True, null=True)
-    # last_use and date_created automatically created, for these field, create one time value to timezone.now()
-    date_created = models.DateTimeField(auto_now_add=True, null=False)
-    last_edit = models.DateTimeField(auto_now=True, null=False)
+
+    def __str__(self) -> str:
+        return f"{self.term}: {self.definition.subtitle}"
+
 
 class Tag(models.Model):
     name = models.CharField(max_length=36, null=False)
@@ -168,8 +169,8 @@ class Tag(models.Model):
 
     def save(self, *args, **kwargs):
         if not self.slug or self.slug == "":
-            self.slug = generate_slug(self)
+            self.slug = slugify(self.name)
         super().save(*args, **kwargs)
 
     def __str__(self) -> str:
-        return f'{self.name}: {self.section_id}: {self.section_id.philosopher_id}'
+        return f"{self.name}: {self.section_id}: {self.section_id.page_id}"
