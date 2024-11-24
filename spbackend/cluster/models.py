@@ -13,7 +13,7 @@ def section_file_path(instance, filename):
     A note block can only have one file or image, you need to validate that in form
     """
     return "{0}/{1}/section-{2}/{3}".format(
-        instance.page_id.page_type, instance.page_id.slug, instance.subtitle, filename
+        instance.page_id.page_type, instance.page_id.slug, instance.slug, filename
     )
 
 
