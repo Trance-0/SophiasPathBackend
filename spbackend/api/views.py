@@ -3,6 +3,9 @@ from rest_framework.decorators import api_view
 from django.db.models import Q
 from cluster.serializers import PageSerializer,SectionSerializer,RelationSerializer,TagSerializer
 from cluster.models import Page,Section,Relation,Tag,PageTypeChoices,RelationTypeChoices
+import logging
+
+logger=logging.getLogger(__name__)
 
 @api_view(['GET'])
 def getSchools(request):
@@ -35,9 +38,10 @@ def getDevelopmentsBySchool(request,school_slug):
 
 @api_view(['GET'])
 def getPhilosophersBySchool(request,school_slug):
-    school=Page.objects.get(slug=school_slug)
-    affiliations=Relation.objects.filter(Q(start_page_id=school) & Q(relation_type=RelationTypeChoices.AFFILIATION))
-    philosophers=[a.end_page_id for a in affiliations]
+    school=Page.objects.get(Q(slug=school_slug) & Q(page_type=PageTypeChoices.SCHOOL))
+    logger.info(f"Getting philosophers by school {school.name}")
+    affiliations=Relation.objects.filter(Q(end_page_id=school) & Q(relation_type=RelationTypeChoices.AFFILIATION))
+    philosophers=[a.start_page_id for a in affiliations]
     serializer=PageSerializer(philosophers,many=True)
     return Response(serializer.data)
 

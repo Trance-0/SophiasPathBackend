@@ -113,6 +113,8 @@ class RelationTypeChoices(models.TextChoices):
     DEVELOPMENT = "d", _("Development")
     # this defines the relation between philosopher and philosopher
     INFLUENCE = "i", _("Influence")
+    # this defines the relation between philosopher and philosopher
+    REJECTION = "r", _("Rejection")
 
 class Relation(models.Model):
     # this defines edge for philosopher -> philosopher
@@ -133,7 +135,6 @@ class Relation(models.Model):
         choices=RelationTypeChoices.choices,
         default=RelationTypeChoices.AFFILIATION,
     )
-    name = models.CharField(max_length=36, null=False)
     description = models.CharField(max_length=600, blank=True, null=True)
     # last_use and date_created automatically created, for these field, create one time value to timezone.now()
     date_created = models.DateTimeField(auto_now_add=True, null=False)

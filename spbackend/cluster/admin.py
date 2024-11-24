@@ -65,7 +65,7 @@ class PageAdmin(admin.ModelAdmin):
 class RelationAdmin(admin.ModelAdmin):
     """ in admin view and one extra for convenience"""
     model=Relation
-    list_display = ("name","start_page_id","end_page_id","relation_type","date_created","last_edit",)
+    list_display = ("start_page_id","relation_type","end_page_id","date_created","last_edit")
 
 # Add model to admin view
 admin.site.register(Page,PageAdmin)
