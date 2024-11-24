@@ -7,7 +7,7 @@ volumes:
 
 services:
   spbackend:
-    image: trancezero/spbackend:dev
+    image: trance0/spbackend:dev
     env_file: 
       - .env
     build:
