@@ -13,7 +13,7 @@ def section_file_path(instance, filename):
     A note block can only have one file or image, you need to validate that in form
     """
     return "{0}/{1}/section-{2}/{3}".format(
-        instance.page_id.page_type, instance.page_id.slug, instance.slug, filename
+        instance.page_id.page_type, instance.page_id.slug, instance.slug, filename.split(".")[-1]
     )
 
 
@@ -99,6 +99,10 @@ class Section(models.Model):
     last_edit = models.DateTimeField(auto_now=True, null=False)
 
     def save(self, *args, **kwargs):
+        if self.section_type == SectionTypeChoices.READMORE:
+            self.subtitle = f"readmore"
+        elif self.section_type == SectionTypeChoices.PAGE_META:
+            self.subtitle = f"meta"
         if not self.slug or self.slug == "":
             self.slug = slugify(f"{self.page_id.slug}-{self.subtitle}")
         super().save(*args, **kwargs)
