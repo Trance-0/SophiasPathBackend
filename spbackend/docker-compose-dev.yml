@@ -40,7 +40,7 @@ services:
     networks:
       - spbackend-dev
   spnginx:
-    image: trancezero/spnginx
+    image: trance0/spnginx
     env_file: 
       - .env
     build: ./spnginx
