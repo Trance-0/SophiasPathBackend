@@ -13,4 +13,5 @@ urlpatterns =[
     path('getRelationsList/<str:philosopher_slug>',views.getRelations),
     path('getTags',views.getTags),
     path('getSectionsByTag/<str:tag_slug>',views.getSectionsByTag),
+    path('search',views.search),
 ]

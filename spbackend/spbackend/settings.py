@@ -31,7 +31,7 @@ SECRET_KEY = os.getenv('SECRET_KEY')
 DEBUG = os.getenv('DEBUG', 'False') == 'True'
 
 # if this setting does not work in docker container, manually change the code in python.
-ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS").split(" ")
+ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS").split(",")
 
 # setting for corsheaders https://pypi.org/project/django-cors-headers/
 # CORS_ALLOW_ALL_ORIGINS = True
@@ -52,6 +52,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.postgres',
     'rest_framework',
     'debug_toolbar',
     'corsheaders',
@@ -79,7 +80,6 @@ if DEBUG:
 
 # add trusted CDN
 CSRF_TRUSTED_ORIGINS = [f"http://localhost:{os.getenv('NGINX_PORT', 80)}","https://backend.sophiaspath.org"]
-
 
 ROOT_URLCONF = 'spbackend.urls'
 

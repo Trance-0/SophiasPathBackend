@@ -1,4 +1,4 @@
-version: '0.8'
+version: '1.0'
 
 volumes:
   postgres-data:
@@ -10,7 +10,7 @@ networks:
 
 services:
   spbackend:
-    image: trance0/spbackend:v1.0
+    image: trance0/spbackend:v1.0.1
     env_file: 
       - .env.prod
     build:

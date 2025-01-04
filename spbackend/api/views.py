@@ -1,11 +1,18 @@
+from collections import Counter
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from django.db.models import Q
+# from django.db.models.functions import Lower
+# from django.db.models import CharField,TextField
 from cluster.serializers import PageSerializer,SectionSerializer,RelationSerializer,TagSerializer
 from cluster.models import Page,Section,Relation,Tag,PageTypeChoices,RelationTypeChoices
 import logging
 
 logger=logging.getLogger(__name__)
+
+# register lower lookup for CharField: https://stackoverflow.com/questions/61482696/unsupported-lookup-lower-for-charfield-or-join-on-the-field-not-permitted
+# CharField.register_lookup(Lower)
+# TextField.register_lookup(Lower)
 
 @api_view(['GET'])
 def getSchools(request):
@@ -81,6 +88,23 @@ def getTags(request):
 @api_view(['GET'])
 def getSectionsByTag(request,tag_slug):
     sections=[s.section_id for s in Tag.objects.filter(slug=tag_slug)]
+    serializer=SectionSerializer(sections,many=True)
+    return Response(serializer.data)
+
+@api_view(['GET'])
+def search(request):
+    q=request.query_params.get("q")
+    sort=request.query_params.get("sort","relevance")
+    sections=[]
+    if sort=="relevance":
+        # TODO: use trigram similarity to search for relevance
+        sections=Section.objects.filter(Q(subtitle__icontains=q) | Q(text__icontains=q))
+        # sections=Section.objects.all()
+    elif sort=="latest":
+        sections=Section.objects.filter(Q(subtitle__icontains=q) | Q(text__icontains=q)).order_by("-last_edit")
+    elif sort=="oldest":
+        sections=Section.objects.filter(Q(subtitle__icontains=q) | Q(text__icontains=q)).order_by("last_edit")
+    logger.info(f"Searching for keyword {q} with sort {sort}, result: {sections}")
     serializer=SectionSerializer(sections,many=True)
     return Response(serializer.data)
 
