@@ -11,9 +11,14 @@ class PageSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class SectionSerializer(serializers.ModelSerializer):
+    url = serializers.SerializerMethodField()
+
     class Meta:
         model = Section
         fields = '__all__'
+
+    def get_url(self, obj):
+        return f"{obj.page_id.slug}#{obj.slug}"
 
 class RelationSerializer(serializers.ModelSerializer):
     class Meta:
