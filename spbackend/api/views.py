@@ -53,9 +53,9 @@ def getPhilosophersBySchool(request,school_slug):
     return Response(serializer.data)
 
 @api_view(['GET'])
-def getPhilosopher(request,philosopher_slug):
-    philosopher=Page.objects.get(Q(slug=philosopher_slug) & Q(page_type=PageTypeChoices.PHILOSOPHER))
-    serializer=PageSerializer(philosopher)
+def getPage(request,page_slug):
+    page=Page.objects.get(Q(slug=page_slug))
+    serializer=PageSerializer(page)
     return Response(serializer.data)
 
 @api_view(['GET'])
@@ -66,9 +66,9 @@ def getAffiliations(request,philosopher_slug):
     return Response(serializer.data)
 
 @api_view(['GET'])
-def getSectionsByPhilosopher(request,philosopher_slug):
-    philosopher=Page.objects.get(Q(slug=philosopher_slug) & Q(page_type=PageTypeChoices.PHILOSOPHER))
-    sections=Section.objects.filter(Q(page_id=philosopher)).order_by("order")
+def getSections(request,page_slug):
+    page=Page.objects.get(Q(slug=page_slug))
+    sections=Section.objects.filter(Q(page_id=page)).order_by("order")
     serializer=SectionSerializer(sections,many=True)
     # assume the definition link size is small, we can iterate over all the links.
     # DO NOT DO THIS when definition link size is large, use add on create instead.
