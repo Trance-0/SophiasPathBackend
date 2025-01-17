@@ -5,7 +5,7 @@ from django.db.models import Q
 # from django.db.models.functions import Lower
 # from django.db.models import CharField,TextField
 from cluster.serializers import PageSerializer,SectionSerializer,RelationSerializer,TagSerializer
-from cluster.models import DefinitionLink, Page,Section,Relation,Tag,PageTypeChoices,RelationTypeChoices
+from cluster.models import DefinitionLink, Page,Section,Relation, SectionTypeChoices,Tag,PageTypeChoices,RelationTypeChoices
 import logging
 
 logger=logging.getLogger(__name__)
@@ -77,11 +77,13 @@ def getSectionsByPhilosopher(request,philosopher_slug):
     definition_links={d.term:d.url() for d in definitions}
     # add definition links used in the page
     for section in serializer.data:
-        definition_links_in_section=set()
+        # skip non-text sections
+        if section["section_type"]!=SectionTypeChoices.TEXT: continue
+        definition_links_in_section={}
         for word in section["text"].split():
             if word in definition_links:
-                definition_links_in_section.add(definition_links[word])
-        section["definition_links"]=list(definition_links_in_section)
+                definition_links_in_section[word]=definition_links[word]
+        section["definition_links"]=definition_links_in_section
     return Response(serializer.data)
 
 @api_view(['GET'])
@@ -122,8 +124,9 @@ def search(request):
         sections=Section.objects.filter(Q(subtitle__icontains=q) | Q(text__icontains=q)).order_by("last_edit")
     logger.info(f"Searching for keyword {q} with sort {sort}, result: {sections}")
     serializer=SectionSerializer(sections,many=True)
-    # paginate the result
-    final_result=serializer.data[page*page_size:(page+1)*page_size]
+    # compose result
+    final_result={}
+    final_result["sections"]=serializer.data[page*page_size:(page+1)*page_size]
     final_result["total_pages"]=len(serializer.data)//page_size
     return Response(final_result)
 
