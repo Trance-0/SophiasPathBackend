@@ -158,6 +158,12 @@ class DefinitionLink(models.Model):
 
     def __str__(self) -> str:
         return f"{self.term}: {self.definition.subtitle}"
+    
+    def url(self):
+        if self.definition.section_type==SectionTypeChoices.PAGE_META:
+            return f"{self.definition.page_id.slug}"
+        else:
+            return f"{self.definition.page_id.slug}#{self.definition.slug}"
 
 
 class Tag(models.Model):

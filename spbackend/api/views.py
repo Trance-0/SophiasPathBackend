@@ -5,7 +5,7 @@ from django.db.models import Q
 # from django.db.models.functions import Lower
 # from django.db.models import CharField,TextField
 from cluster.serializers import PageSerializer,SectionSerializer,RelationSerializer,TagSerializer
-from cluster.models import Page,Section,Relation,Tag,PageTypeChoices,RelationTypeChoices
+from cluster.models import DefinitionLink, Page,Section,Relation,Tag,PageTypeChoices,RelationTypeChoices
 import logging
 
 logger=logging.getLogger(__name__)
@@ -70,6 +70,18 @@ def getSectionsByPhilosopher(request,philosopher_slug):
     philosopher=Page.objects.get(Q(slug=philosopher_slug) & Q(page_type=PageTypeChoices.PHILOSOPHER))
     sections=Section.objects.filter(Q(page_id=philosopher)).order_by("order")
     serializer=SectionSerializer(sections,many=True)
+    # assume the definition link size is small, we can iterate over all the links.
+    # DO NOT DO THIS when definition link size is large, use add on create instead.
+    definitions=DefinitionLink.objects.all()
+    # render the definition links as dict of {term:url}
+    definition_links={d.term:d.url() for d in definitions}
+    # add definition links used in the page
+    for section in serializer.data:
+        definition_links_in_section=set()
+        for word in section["text"].split():
+            if word in definition_links:
+                definition_links_in_section.add(definition_links[word])
+        section["definition_links"]=list(definition_links_in_section)
     return Response(serializer.data)
 
 @api_view(['GET'])
@@ -95,6 +107,10 @@ def getSectionsByTag(request,tag_slug):
 def search(request):
     q=request.query_params.get("q")
     sort=request.query_params.get("sort","relevance")
+    # set default page to 1
+    page=request.query_params.get("page",1)
+    # show 10 items per page
+    page_size=10
     sections=[]
     if sort=="relevance":
         # TODO: use trigram similarity to search for relevance
@@ -106,7 +122,10 @@ def search(request):
         sections=Section.objects.filter(Q(subtitle__icontains=q) | Q(text__icontains=q)).order_by("last_edit")
     logger.info(f"Searching for keyword {q} with sort {sort}, result: {sections}")
     serializer=SectionSerializer(sections,many=True)
-    return Response(serializer.data)
+    # paginate the result
+    final_result=serializer.data[page*page_size:(page+1)*page_size]
+    final_result["total_pages"]=len(serializer.data)//page_size
+    return Response(final_result)
 
 @api_view(['POST'])
 def samplePost(request):
