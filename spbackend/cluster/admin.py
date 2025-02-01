@@ -127,8 +127,14 @@ class PageAdmin(admin.ModelAdmin):
                 # Process subtitle if it contains bracket characters
                 if "[" in raw_subtitle or "]" in raw_subtitle:
                     if section.section_type == SectionTypeChoices.ARROW:
-                        # Skip subtitle processing for ARROW type sections
-                        pass
+                        relate_to, relation_name = re.match(r'Arrow to \[(.*)\]\s+\("(.*)"\)', raw_subtitle).groups()
+                        # check existing definition links
+                        definition_links = DefinitionLink.objects.filter(term=relate_to).first()
+                        if definition_links is None:
+                            logger.warning(f"Definition link for '{relate_to}' not found, please create the link in the definition link section.")
+                        else:
+                            logger.info(f"Definition link for '{relate_to}' already exists, adding relation to '{relation_name}'")
+                            section.args = definition_links.url()
                     else:
                         # Insert markers around brackets and split the string
                         modified_subtitle = raw_subtitle.replace("[", "*[").replace("]", "]*")
