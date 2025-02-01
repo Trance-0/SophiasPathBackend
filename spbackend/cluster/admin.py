@@ -85,16 +85,21 @@ class PageAdmin(admin.ModelAdmin):
 
                     # select section type based on title
                     section_type = SectionTypeChoices.TEXT
-                    if title == "Reference and To read more":
+                    if any(keyword in title.lower() for keyword in ["reference", "read more", "readmore"]):
                         section_type = SectionTypeChoices.READMORE
-                    elif "Arrow to" in title:
+                    elif any(keyword in title.lower() for keyword in ["arrow to"]):
                         section_type = SectionTypeChoices.ARROW
+                    elif any(keyword in title.lower() for keyword in ["footnotes", "footnote"]):
+                        section_type = SectionTypeChoices.FOOTNOTE
+
+
+
+                    # obsolete types
                     elif "Image" in title:
                         section_type = SectionTypeChoices.IMAGE
                     elif "File" in title:
                         section_type = SectionTypeChoices.FILE
-                    elif title == "Footnotes":
-                        section_type = SectionTypeChoices.FOOTNOTE
+                        
 
                     new_section = Section(
                         page_id=obj,
