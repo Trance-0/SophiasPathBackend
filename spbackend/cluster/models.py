@@ -25,13 +25,14 @@ class PageTypeChoices(models.TextChoices):
 
 class Page(models.Model):
     # this defines the School of philosopher (Set name)
-    name = models.CharField(max_length=100, unique=True, null=False)
-    slug = models.SlugField(max_length=100, unique=True, blank=True, null=False)
+    name = models.CharField(max_length=256, unique=True, null=False)
+    slug = models.SlugField(max_length=256, unique=True, blank=True, null=False)
     page_type = models.CharField(
         max_length=1,
         choices=PageTypeChoices.choices,
         default=PageTypeChoices.PHILOSOPHER,
     )
+
     description = models.CharField(max_length=600, blank=True, null=True)
     # last_use and date_created automatically created, for these field, create one time value to timezone.now()
     date_created = models.DateTimeField(auto_now_add=True, null=False)
@@ -67,13 +68,14 @@ class Section(models.Model):
         on_delete=models.CASCADE,
         null=False,
     )
-    subtitle = models.CharField(max_length=100, default="Untitled Section", null=False)
-    slug = models.SlugField(max_length=100, unique=True, blank=True, null=False)
+    subtitle = models.CharField(max_length=256, default="Untitled Section", null=False)
+    slug = models.SlugField(max_length=256, unique=True, blank=True, null=False)
     section_type = models.CharField(
         max_length=1,
         choices=SectionTypeChoices.choices,
         default=SectionTypeChoices.TEXT,
     )
+
     parent_section_id = models.ForeignKey(
         "self",
         on_delete=models.CASCADE,
@@ -149,7 +151,7 @@ class Relation(models.Model):
 
 class DefinitionLink(models.Model):
     # this class is used to render definition link for the term
-    term = models.CharField(max_length=36, null=False)
+    term = models.CharField(max_length=64, null=False)
     definition = models.ForeignKey(
         Section,
         on_delete=models.CASCADE,
@@ -167,10 +169,11 @@ class DefinitionLink(models.Model):
 
 
 class Tag(models.Model):
-    name = models.CharField(max_length=36, null=False)
-    slug = models.SlugField(max_length=100, blank=True, null=False)
+    name = models.CharField(max_length=64, null=False)
+    slug = models.SlugField(max_length=256, blank=True, null=False)
     # last_use and date_created automatically created, for these field, create one time value to timezone.now()
     date_created = models.DateTimeField(auto_now_add=True, null=False)
+
     section_id = models.ForeignKey(
         Section,
         # when conversation is deleted, whether the creator should also be deleted
