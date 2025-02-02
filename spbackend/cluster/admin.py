@@ -134,10 +134,11 @@ class PageAdmin(admin.ModelAdmin):
                     if section.section_type == SectionTypeChoices.ARROW:
                         relate_to, relation_name = re.match(r'Arrow to \[(.*)\]\s+\("(.*)"\)', raw_subtitle).groups()
                         # check existing definition links
-                        definition_links = DefinitionLink.objects.filter(term=relate_to).first()
+                        definition_links = DefinitionLink.objects.filter(term=f'[{relate_to}]').first()
                         if definition_links is None:
                             logger.warning(f"Definition link for '{relate_to}' not found, please create the link in the definition link section.")
                         else:
+
                             logger.info(f"Definition link for '{relate_to}' already exists, adding relation to '{relation_name}'")
                             section.args = definition_links.url()
                     else:
