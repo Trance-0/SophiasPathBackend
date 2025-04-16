@@ -1,0 +1,52 @@
+# This is docker-compose file for portainer
+volumes:
+  postgres-data:
+  spbackend-data:
+  static_volume:
+  media_volume:
+networks:
+  spbackend:
+
+services:
+  spbackend:
+    image: trance0/spbackend:v1.1
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: gunicorn spbackend.wsgi:application --bind 0.0.0.0:8000
+    volumes:
+      - spbackend-data:/home/spbackend
+      - static_volume:/home/staticfiles
+      - media_volume:/home/mediafiles
+    ports:
+      - ${DJANGO_PORT}:8000
+    depends_on:
+      - spdb
+    networks:
+      - spbackend
+  spdb:
+    image: postgres:15
+    volumes:
+      - postgres-data:/var/lib/postgresql/data/
+    environment:
+      - POSTGRES_USER=${POSTGRE_USERNAME}
+      - POSTGRES_PASSWORD=${POSTGRE_PASSWORD}
+      - POSTGRES_DB=${POSTGRE_HOST}
+    ports:
+      # port $POSTGRE_PORT for connection on local computer
+      - ${POSTGRE_PORT}:5432
+    networks:
+      - spbackend
+  spnginx:
+    image: trance0/spnginx
+    build: ./spnginx
+    volumes:
+      - static_volume:/home/staticfiles
+      - media_volume:/home/mediafiles
+    ports:
+      # port for debugging nginx on local computer
+      - ${NGINX_PORT}:80
+    depends_on:
+      - spbackend
+    networks:
+      - spbackend
