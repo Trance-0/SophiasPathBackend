@@ -1,4 +1,6 @@
 # This is docker-compose file for portainer
+# It is used for deployment with external .env file injected on compose
+
 volumes:
   postgres-data:
   spbackend-data:

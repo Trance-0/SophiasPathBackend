@@ -1,5 +1,5 @@
 # pull official base image
-FROM python:3.9.18-bullseye as builder
+FROM python:3.11.12-bullseye as builder
 
 # configurations
 ENV HOME=/home
@@ -17,11 +17,6 @@ RUN pip3 install -r requirements.txt --no-cache-dir
 # copy files
 WORKDIR ${APP_HOME}
 COPY . . 
-# remove existing env file
-RUN rm ${APP_HOME}/.env
-# copy production env file to app dir and root dir
-COPY ./.env.prod ${APP_HOME}/.env
-COPY ./.env.prod /.env
 
 # add entrypoint to root
 ADD ./entrypoint.sh /entrypoint.sh
@@ -40,9 +35,13 @@ COPY ./media ${PRODUCTION_MEDIA_ROOT}
 # change file permission
 RUN chmod -R a+x ${PRODUCTION_STATIC_ROOT}
 RUN chmod -R a+x ${PRODUCTION_MEDIA_ROOT}
+
 # the safer version as below
 # RUN chown -R www-data:www-data ${HOME}/staticfiles
 # RUN chown -R www-data:www-data ${HOME}/mediafiles
+
+# remove existing env file, prevent credentials exposure
+RUN rm ${APP_HOME}/*.env
 
 # netcat for database server testing
 RUN apt-get update && apt-get -y dist-upgrade
