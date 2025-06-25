@@ -1,5 +1,6 @@
 # This is docker-compose file for portainer
-# It is used for deployment with external .env file injected on compose
+# It is used for deployment with an external .env file injected on compose
+# You should add those config files to nginx by yourself if necessary
 
 volumes:
   postgres-data:
@@ -12,9 +13,6 @@ networks:
 services:
   spbackend:
     image: trance0/spbackend:v1.1
-    build:
-      context: .
-      dockerfile: Dockerfile
     command: gunicorn spbackend.wsgi:application --bind 0.0.0.0:8000
     volumes:
       - spbackend-data:/home/spbackend
@@ -41,7 +39,6 @@ services:
       - spbackend
   spnginx:
     image: trance0/spnginx
-    build: ./spnginx
     volumes:
       - static_volume:/home/staticfiles
       - media_volume:/home/mediafiles
