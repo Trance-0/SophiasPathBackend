@@ -84,7 +84,7 @@ if DEBUG:
     INTERNAL_IPS = [ip[: ip.rfind(".")] + ".1" for ip in ips] + ["127.0.0.1", "10.0.2.2"]
 
 # add trusted CDN
-CSRF_TRUSTED_ORIGINS = [f"http://localhost:{os.getenv('NGINX_PORT', 80)}","https://backend.sophiaspath.org"]
+CSRF_TRUSTED_ORIGINS = [f"http://localhost:{os.getenv('NGINX_PORT', 80)}"] + os.getenv('CSRF_TRUSTED_ORIGINS', '').split(",")
 
 ROOT_URLCONF = 'spbackend.urls'
 
