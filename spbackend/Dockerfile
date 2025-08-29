@@ -9,14 +9,14 @@ ENV PRODUCTION_STATIC_ROOT=/home/staticfiles
 RUN mkdir ${APP_HOME}
 
 # install dependencies
-WORKDIR $HOME 
+WORKDIR ${HOME}
 RUN pip install --upgrade pip
-COPY requirements.txt .
+COPY requirements.txt ${HOME}
 RUN pip3 install -r requirements.txt --no-cache-dir
 
 # copy files
 WORKDIR ${APP_HOME}
-COPY . . 
+COPY . ${APP_HOME}
 
 # add entrypoint to root
 ADD ./entrypoint.sh /entrypoint.sh
