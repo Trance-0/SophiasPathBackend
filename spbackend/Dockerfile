@@ -29,8 +29,8 @@ RUN mkdir $HOME/mediafiles
 
 # copy developing file to target location (collect static passively)
 RUN python ${APP_HOME}/manage.py collectstatic --noinput
-COPY ./productionfiles ${PRODUCTION_STATIC_ROOT}
-COPY ./media ${PRODUCTION_MEDIA_ROOT}
+COPY ${APP_HOME}/productionfiles ${PRODUCTION_STATIC_ROOT}
+COPY ${APP_HOME}/media ${PRODUCTION_MEDIA_ROOT}
 
 # change file permission
 RUN chmod -R a+x ${PRODUCTION_STATIC_ROOT}
