@@ -29,6 +29,7 @@ SECRET_KEY = os.getenv('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 # DEBUG = False
 DEBUG = os.getenv('DEBUG', 'False') == 'True'
+DEBUG_DB = os.getenv('DEBUG_DB', 'False') == 'True'
 
 # if this setting does not work in docker container, manually change the code in python.
 ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS").split(",")
@@ -160,7 +161,7 @@ DATABASES = {
         'NAME': 'postgres',
         'USER': os.getenv('POSTGRE_USERNAME'),
         'PASSWORD': os.getenv('POSTGRE_PASSWORD'),
-        'HOST': "localhost" if DEBUG else os.getenv('POSTGRE_HOST'),
+        'HOST': "localhost" if DEBUG_DB else os.getenv('POSTGRE_HOST'),
         'PORT': os.getenv('POSTGRE_PORT') # wrong! default port within the network is always 5432 for postgres
         # 'PORT': 5432
     }
@@ -221,7 +222,7 @@ STATICFILES_DIRS = [
 ]
 
 # this is the location where collect static will run, set it to the service directory of static url in production
-STATIC_ROOT = os.path.join(BASE_DIR, 'productionfiles/') if DEBUG else os.getenv('PRODUCTION_STATIC_ROOT')
+STATIC_ROOT = os.path.join(BASE_DIR, 'productionfiles/') if os.getenv('PRODUCTION_STATIC_ROOT') is None else os.getenv('PRODUCTION_STATIC_ROOT')
 
 # Image files (jpg, jpeg)
 # reference: https://djangocentral.com/uploading-images-with-django/
@@ -230,7 +231,7 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'productionfiles/') if DEBUG else os.getenv
 MEDIA_URL = '/media/'
 
 # Path where media is stored
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media') if DEBUG else os.getenv('PRODUCTION_MEDIA_ROOT')
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media') if os.getenv('PRODUCTION_MEDIA_ROOT') is None else os.getenv('PRODUCTION_MEDIA_ROOT')
 
 # Offline development tag
 OFFLINE = False
