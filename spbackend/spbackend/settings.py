@@ -41,6 +41,7 @@ CORS_ALLOWED_ORIGINS = [
     "https://backend.sophiaspath.org",
     "https://sophiaspath.org",
     "https://www.sophiaspath.org"
+    "https://sophiaspath.vercel.app"
 ]
 CORS_ALLOW_CREDENTIALS = True
 
